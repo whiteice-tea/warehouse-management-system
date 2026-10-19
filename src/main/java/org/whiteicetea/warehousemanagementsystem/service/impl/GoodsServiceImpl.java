@@ -3,6 +3,7 @@ package org.whiteicetea.warehousemanagementsystem.service.impl;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.whiteicetea.warehousemanagementsystem.entity.Goods;
+import org.whiteicetea.warehousemanagementsystem.exception.GoodsNotFoundException;
 import org.whiteicetea.warehousemanagementsystem.mapper.GoodsMapper;
 import org.whiteicetea.warehousemanagementsystem.service.GoodsService;
 
@@ -17,6 +18,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(goods!=null){
             return goods;
         }
-        throw new RuntimeException("商品不存在");
+        throw new GoodsNotFoundException("商品不存在");
     }
 }
