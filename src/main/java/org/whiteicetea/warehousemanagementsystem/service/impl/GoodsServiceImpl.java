@@ -8,4 +8,14 @@ import org.whiteicetea.warehousemanagementsystem.service.GoodsService;
 
 @Service
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
+
+    private Goods goods;
+    @Override
+    public Goods getById(Long id) {
+        goods = super.getById(id);
+        if(goods!=null){
+            return goods;
+        }
+        throw new RuntimeException("商品不存在");
+    }
 }
