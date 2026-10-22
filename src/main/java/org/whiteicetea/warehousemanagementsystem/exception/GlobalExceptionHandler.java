@@ -3,16 +3,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.whiteicetea.warehousemanagementsystem.common.ApiResponse;
 
 @RestControllerAdvice
     public class GlobalExceptionHandler{
-        @ExceptionHandler(GoodsNotFoundException.class)
-        public ResponseEntity<String> handleGoodsNotFound(GoodsNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
 
         @ExceptionHandler(BusinessException.class)
-        public ResponseEntity<String> handleBusinessException(BusinessException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e){
+            return ResponseEntity.status(e.getErrorCode().getStatus()).body(new ApiResponse<Void>(
+                    e.getErrorCode().name(),
+                    e.getMessage(),
+                    null
+            ));
         }
     }
