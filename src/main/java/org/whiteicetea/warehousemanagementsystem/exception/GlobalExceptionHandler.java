@@ -6,13 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.whiteicetea.warehousemanagementsystem.common.ApiResponse;
 import org.whiteicetea.warehousemanagementsystem.common.ErrorCode;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
@@ -66,6 +71,21 @@ public class GlobalExceptionHandler{
         ));
 
     }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<Void>(
+                ErrorCode.INVALID_ARGUMENT.name(),
+                "路径参数格式错误",
+                null
+        ));
+    }
 
-
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(NoResourceFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<Void>(
+                ErrorCode.ROUTE_NOT_FOUND.name(),
+                "接口路径不存在",
+                null
+        ));
+    }
 }

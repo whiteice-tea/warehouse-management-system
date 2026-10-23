@@ -7,11 +7,11 @@
 | 名称 | 方法和 URL | 当前输入 | 当前返回 | 证据与不足 |
 | --- | --- | --- | --- | --- |
 | 商品列表 | GET `/api/goods` | 无 | 原始 `List<Goods>` JSON 数组 | 历史联调成功，无分页 |
-| 商品详情 | GET `/api/goods/{id}` | Long 路径 ID | 原始 Goods；找不到时可能为空响应体 | 历史联调成功，未实现 404 业务处理 |
+| 商品详情 | GET `/api/goods/{id}` | Long 路径 ID | 原始 Goods；找不到时返回统一 404 | 查询和商品不存在响应已联调，成功响应尚未包装 |
 | 新增商品 | POST `/api/goods` | 直接绑定 Goods | boolean | 历史 true 和数据库记录已验证，未限制可写字段 |
 | 修改商品 | PUT `/api/goods` | 直接绑定 Goods，含 id | boolean | 方法已写、编译通过，未确认本次修改测试 |
 
-以上四个方法都位于 `GoodsController`。当前没有下面规划的包装响应、DTO、校验、分页、启停用、单据、流水或缓存接口。
+以上四个方法都位于 `GoodsController`。失败响应已在 T02 覆盖约定的公共异常场景；成功响应仍未包装，也没有下面规划的 DTO、校验、分页、启停用、单据、流水或缓存接口。
 
 ## 2. 目标公共约定
 
@@ -39,6 +39,7 @@
 | --- | --- | --- |
 | 400 | INVALID_ARGUMENT | 字段/数量/分页/日期不合法、重复明细、未知可写字段、空更新 |
 | 404 | GOODS_NOT_FOUND | 商品不存在 |
+| 404 | ROUTE_NOT_FOUND | 请求路径不存在；T02 已实现 |
 | 404 | ORDER_NOT_FOUND | 单据不存在 |
 | 405 | METHOD_NOT_ALLOWED | 请求路径存在，但不支持所用的 HTTP 方法 |
 | 409 | GOODS_CODE_DUPLICATE | 商品编码重复，包括并发插入触发唯一约束 |
