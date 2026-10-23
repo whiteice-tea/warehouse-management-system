@@ -40,12 +40,14 @@
 | 400 | INVALID_ARGUMENT | 字段/数量/分页/日期不合法、重复明细、未知可写字段、空更新 |
 | 404 | GOODS_NOT_FOUND | 商品不存在 |
 | 404 | ORDER_NOT_FOUND | 单据不存在 |
+| 405 | METHOD_NOT_ALLOWED | 请求路径存在，但不支持所用的 HTTP 方法 |
 | 409 | GOODS_CODE_DUPLICATE | 商品编码重复，包括并发插入触发唯一约束 |
 | 409 | GOODS_DISABLED | 停用商品不允许出入库 |
 | 409 | ORDER_STATE_CONFLICT | 取消后确认、确认后取消等非法流转 |
 | 409 | INSUFFICIENT_STOCK | 出库数量超过余额 |
 | 409 | STOCK_LIMIT_EXCEEDED | 入库后超过 Integer 数量上限 |
 | 409 | RETRYABLE_CONFLICT | 死锁、锁等待超时等，本次事务已回滚，可重试同一单据 |
+| 415 | UNSUPPORTED_MEDIA_TYPE | 请求的 Content-Type 不受接口支持 |
 | 500 | INTERNAL_ERROR | 未预期服务异常；服务端记录完整日志 |
 
 未定义资源路径为 404，不支持的方法为 405，不支持的媒体类型为 415，语法错误的 JSON 为 400。全局异常处理保留这些协议状态。

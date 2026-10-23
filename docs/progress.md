@@ -1,6 +1,6 @@
 # 实际开发进度
 
-最后更新日期：2026-10-19。第1节保留2026-10-15的历史核对范围；本次新增的商品查询记录见第10节。代码检查、开发者手工反馈与未来计划不可互换。
+最后更新日期：2026-10-22。第1节保留2026-10-15的历史核对范围；商品查询与异常响应的后续记录见第10、11节。代码检查、开发者手工反馈与未来计划不可互换。
 
 ## 1. 本次核对范围
 
@@ -135,4 +135,14 @@ T01已按现有接口范围完成手工验收；T02～T38均未标记整项通�
 
 ## 11. 当前任务：T02 公共响应和异常基础
 
-现有的 `GoodsNotFoundException` 与 `GlobalExceptionHandler` 只覆盖商品不存在这一种情况，返回正文目前是字符串。T02将逐步建立统一的响应结构、错误码及异常映射；本节启动不表示T02已完成。先按 [接口设计](api-design.md#21-响应) 理解 HTTP 状态码与响应正文的职责，再由开发者亲自编写公共类型。
+2026-10-19 启动 T02 时，`GlobalExceptionHandler` 仅处理商品不存在，返回字符串正文。此后开发者开始建立统一响应结构和业务异常映射；进展见下方记录。T02 启动或完成其中一步均不表示整项已完成。
+
+### 2026-10-22 阶段性验证
+
+- 开发者已将 `GlobalExceptionHandler` 改为统一处理 `BusinessException`：状态码取自异常的 `ErrorCode`，正文使用 `ApiResponse<Void>`；此前商品专用的字符串处理方法已移除。代码位于提交 `f934ce3`，本地 `./mvnw -o -DskipTests compile` 为 `BUILD SUCCESS`。
+- 开发者提供的 Postman 响应截图显示 HTTP 404，JSON 正文为 `code=GOODS_NOT_FOUND`、`message=商品不存在`、`data=null`。截图未包含请求 URL，因此这里仅记录响应证据，不补写具体请求路径或 ID。
+- 开发者新增 `INVALID_ARGUMENT`（HTTP 400）及 `HttpMessageNotReadableException` 处理方法，返回固定消息“请求体格式错误”；本地 `./mvnw -o -DskipTests compile` 为 `BUILD SUCCESS`。第一次 Postman 截图显示请求路径为 `/api/goods/`，返回框架路由 404，并非 JSON 解析结果；修正为 `/api/goods` 后，开发者反馈结果正确，但本次未收到修正后响应截图，故仅记录为开发者手工反馈。
+- 开发者提供 `DELETE /api/goods` 的 Postman 截图：HTTP 405，响应正文为 Spring 默认的 `timestamp/status/error/path` 结构，`path=/api/goods`。请求体仍显示之前测试用的畸形 JSON，但路由方法匹配先返回 405；该截图仅证明不支持的方法路径，尚不证明统一 405 响应已实现。
+- 开发者新增 `METHOD_NOT_ALLOWED`（HTTP 405）及 `HttpRequestMethodNotSupportedException` 处理方法；本地 `./mvnw -o -DskipTests compile` 为 `BUILD SUCCESS`。再次提供的 Postman 截图显示 `DELETE /api/goods` 返回 HTTP 405，JSON 正文为 `code=METHOD_NOT_ALLOWED`、`message=请求方法不支持`、`data=null`，405 的统一响应手工验证通过。
+- 开发者提供 `POST /api/goods`、`Content-Type: text/plain` 的 Postman 截图：HTTP 415，正文为 Spring 默认的 `timestamp/status/error/path` 结构，`path=/api/goods`。这验证了媒体类型不支持的现状，尚未实现统一 415 响应。
+- 结论：商品不存在的统一业务异常响应及 405 响应已获截图验证；畸形 JSON 的 400 处理已编译并由开发者反馈手工通过。T02 的 415、500 等异常映射与针对性测试尚未验收，T02 整项仍进行中。
